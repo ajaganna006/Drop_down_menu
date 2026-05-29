@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Dropdown Manager Pro</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --secondary: #64748B;
+            --danger: #EF4444;
+            --success: #10B981;
+            --background: #F8FAFC;
+            --surface: #FFFFFF;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding-bottom: 40px;
+        }
+
+        /* Layout & Containers */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 0.625rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0.625rem 1rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: #F1F5F9;
+        }
+
+        .btn-danger {
+            background: #FEF2F2;
+            color: var(--danger);
+            border: 1px solid #FECACA;
+        }
+
+        .btn-danger:hover {
+            background: #FEE2E2;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-icon {
+            padding: 0.4rem;
+            border-radius: 4px;
+        }
+
+        /* Dropdown Manager Styles */
+        .dropdown-item {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: white;
+            position: relative;
+            transition: box-shadow 0.2s;
+        }
+
+        .dropdown-item:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .dropdown-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+
+        .pill-chip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #F1F5F9;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .pill-chip:hover {
+            border-color: var(--border);
+            background: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .pill-remove {
+            color: var(--text-muted);
+            cursor: pointer;
+            margin-left: 8px;
+            font-size: 1.1em;
+            line-height: 1;
+        }
+
+        .pill-remove:hover {
+            color: var(--danger);
+        }
+
+        .preview-area {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: var(--background);
+            border-radius: var(--radius);
+            border: 1px dashed var(--border);
+        }
+
+        .preview-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Code Export Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .code-block {
+            background: #1E293B;
+            color: #E2E8F0;
+            padding: 1rem;
+            border-radius: var(--radius);
+            font-family: 'Consolas', monospace;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 2000;
+        }
+
+        .toast {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 250px;
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; transform: translateY(10px); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <div class="brand">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg>
+                Dynamic Dropdown Manager
+            </div>
+            <div>
+                <button class="btn btn-secondary" onclick="exportAllHTML()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Export HTML
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="main-grid">
+            
+            <!-- Left Sidebar: Create New Dropdown -->
+            <aside>
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Create New Dropdown</h2>
+                    </div>
+                    <form id="createForm" onsubmit="handleCreate(event)">
+                        <div class="form-group">
+                            <label for="dropdownName">Dropdown Label / ID</label>
+                            <input type="text" id="dropdownName" placeholder="e.g., Select Country" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Initial Options (Optional)</label>
+                            <textarea id="initialOptions" placeholder="Enter options separated by new lines..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Create Dropdown
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Global Quick Add</h2>
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        Paste a list of items to add to ALL currently created dropdowns at once.
+                    </p>
+                    <div class="form-group">
+                        <textarea id="bulkGlobalInput" placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea>
+                    </div>
+                    <button onclick="bulkAddToAll()" class="btn btn-secondary" style="width: 100%">Add to All</button>
+                </div>
+            </aside>
+
+            <!-- Right Workspace: Dropdowns -->
+            <section id="workspace">
+                <div id="dropdownsList">
+                    <!-- Dropdowns will be injected here -->
+                </div>
+                <div id="emptyState" class="empty-state">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="11" y2="17"/></svg>
+                    <p>No dropdowns created yet.</p>
+                    <p>Use the form on the left to start building.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Export Modal -->
+    <div class="modal-overlay" id="exportModal" onclick="closeModal(event)">
+        <div class="modal">
+            <div class="card-header" style="border: none; padding: 0; margin-bottom: 1rem;">
+                <h2 class="card-title">Generated HTML</h2>
+                <button class="btn btn-icon" onclick="toggleModal('exportModal', false)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <p style="margin-bottom: 1rem; color: var(--text-muted);">Copy this code and paste it into your website.</p>
+            <div class="code-block" id="exportCode"></div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="btn btn-secondary" onclick="toggleModal('exportModal', false)">Close</button>
+                <button class="btn btn-primary" onclick="copyCode()">Copy to Clipboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- State Management ---
+        let dropdowns = [
+            // Example structure (optional initial state)
+            // { id: 1, name: 'Category', options: ['Technology', 'Design', 'Marketing'] }
+        ];
+
+        // --- DOM Elements ---
+        const listContainer = document.getElementById('dropdownsList');
+        const emptyState = document.getElementById('emptyState');
+        const exportModal = document.getElementById('exportModal');
+        const exportCodeEl = document.getElementById('exportCode');
+        const toastContainer = document.getElementById('toastContainer');
+
+        // --- Initialization ---
+        renderAll();
+
+        // --- Core Functions ---
+
+        function handleCreate(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('dropdownName');
+            const optionsInput = document.getElementById('initialOptions');
+            
+            const name = nameInput.value.trim();
+            const rawOptions = optionsInput.value.trim();
+
+            if (!name) return;
+
+            // Parse initial options (split by newline)
+            const options = rawOptions ? rawOptions.split('\n').map(o => o.trim()).filter(o => o !== '') : [];
+
+            const newDropdown = {
+                id: Date.now(),
+                name: name,
+                options: options
+            };
+
+            dropdowns.push(newDropdown);
+            
+            // Reset form
+            nameInput.value = '';
+            optionsInput.value = '';
+
+            showToast('Dropdown created successfully', 'success');
+            renderAll();
+        }
+
+        function deleteDropdown(id) {
+            if(confirm('Are you sure you want to delete this dropdown?')) {
+                dropdowns = dropdowns.filter(d => d.id !== id);
+                showToast('Dropdown deleted', 'neutral');
+                renderAll();
+            }
+        }
+
+        // Add a single option to a specific dropdown
+        function addOption(id, value) {
+            if (!value || value.trim() === '') {
+                showToast('Please enter an option value', 'error');
+                return;
+            }
+            
+            const dropdown = dropdowns.find(d => d.id === id);
+            if (dropdown) {
+                if (dropdown.options.includes(value)) {
+                    showToast('Option already exists', 'error');
+                    return;
+                }
+                dropdown.options.push(value);
+                showToast(`Added "${value}" to ${dropdown.name}`, 'success');
+                renderDropdown(dropdown); // Re-render just this card for performance
+            }
+        }
+
+        // Remove option from a specific dropdown
+        function removeOption(dropdownId, optionIndex) {
+            const dropdown = dropdowns.find(d => d.id === dropdownId);
+            if (dropdown) {
+                const removed = dropdown.options.splice(optionIndex, 1);
+                showToast(`Removed "${removed}"`, 'neutral');
+                renderDropdown(dropdown);
+            }
+        }
+
+        // Add bulk options to a specific dropdown
+        function bulkAddDropdown(id) {
+            const inputId = `bulk-${id}`;
+            const textarea = document.getElementById(inputId);
+            const text = textarea.value;
+            
+            if (!text.trim()) return;
+
+            const newItems = text.split('\n').map(t => t.trim()).filter(t => t !== '');
+            const dropdown = dropdowns.find(d => d.id === id);
+
+            if (dropdown) {
+                let count = 0;
+                newItems.forEach(item => {
+                    if (!dropdown.options.includes(item)) {
+                        dropdown.options.push(item);
+                        count++;
+                    }
+                });
+                textarea.value = ''; // clear input
+                showToast(`Added ${count} new options`, 'success');
+                renderDropdown(dropdown);
+            }
+        }
+
+        // Add bulk items to ALL dropdowns
+        function bulkAddToAll() {
+            const text = document.getElementById('bulkGlobalInput').value;
+            if (!text.trim()) {
+                showToast('Please enter items to add', 'error');
+                return;
+            }
+
+            const newItems = text.split('\n').map(t => t.trim()).filter(t => t !== '');
+            let totalAdded = 0;
+
+            dropdowns.forEach(dd => {
+                newItems.forEach(item => {
+                    if (!dd.options.includes(item)) {
+                        dd.options.push(item);
+                        totalAdded++;
+                    }
+                });
+            });
+
+            document.getElementById('bulkGlobalInput').value = '';
+            showToast(`Added ${totalAdded} total items across all lists`, 'success');
+            renderAll();
+        }
+
+        // --- Rendering ---
+
+        function renderAll() {
+            listContainer.innerHTML = '';
+            
+            if (dropdowns.length === 0) {
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+                dropdowns.forEach(dd => {
+                    const card = document.createElement('div');
+                    card.id = `card-${dd.id}`;
+                    listContainer.appendChild(card);
+                    renderDropdown(dd);
+                });
+            }
+        }
+
+        function renderDropdown(dd) {
+            const card = document.getElementById(`card-${dd.id}`);
+            if (!card) return;
+
+            // Generate Options HTML
+            const optionsHtml = dd.options.map((opt, index) => `
+                <div class="pill-chip">
+                    <span>${escapeHtml(opt)}</span>
+                    <span class="pill-remove" onclick="removeOption(${dd.id}, ${index})" title="Remove option">&times;</span>
+                </div>
+            `).join('');
+
+            // Generate Select Options for Preview
+            const selectOptions = dd.options.map(opt => `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`).join('');
+
+            card.innerHTML = `
+                <div class="dropdown-item">
+                    <div class="card-header">
+                        <h3 class="card-title">${escapeHtml(dd.name)}</h3>
+                        <button class="btn btn-sm btn-danger" onclick="deleteDropdown(${dd.id})">Delete</button>
+                    </div>
+
+                    <!-- Quick Add Input -->
+                    <div class="dropdown-controls">
+                        <input type="text" id="input-${dd.id}" placeholder="Add new option..." onkeypress="handleEnter(event, ${dd.id})">
+                        <button class="btn btn-primary btn-sm" onclick="triggerAdd(${dd.id})">Add</button>
+                    </div>
+
+                    <!-- Quick Chips -->
+                    <div class="quick-actions">
+                        ${optionsHtml}
+                    </div>
+                    
+                    ${dd.options.length === 0 ? '<p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.5rem">No options yet.</p>' : ''}
+
+                    <!-- Bulk Add per Dropdown -->
+                    <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border)">
+                        <label style="font-size: 0.8rem">Bulk Add (one per line)</label>
+                        <div style="display: flex; gap: 8px;">
+                            <textarea id="bulk-${dd.id}" class="btn-sm" style="height: 40px; padding: 5px; font-size: 0.85rem;" placeholder="Paste list..."></textarea>
+                            <button class="btn btn-secondary btn-sm" onclick="bulkAddDropdown(${dd.id})">Import</button>
+                        </div>
+                    </div>
+
+                    <!-- Live Preview -->
+                    <div class="preview-area">
+                        <span class="preview-label">Live Preview</span>
+                        <select>
+                            <option value="" disabled selected>Select an option...</option>
+                            ${selectOptions}
+                        </select>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- Utilities & Helper Functions ---
+
+        function handleEnter(e, id) {
+            if (e.key === 'Enter') {
+                triggerAdd(id);
+            }
+        }
+
+        function triggerAdd(id) {
+            const input = document.getElementById(`input-${id}`);
+            const val = input.value;
+            if (val) {
+                addOption(id, val);
+                // Input is cleared by re-render, but let's focus it if we were doing complex DOM manipulation.
+                // For now, re-render handles clearing.
+            }
+        }
+
+        function exportAllHTML() {
+            if (dropdowns.length === 0) {
+                showToast('Nothing to export!', 'error');
+                return;
+            }
+
+            let html = '<!-- Generated by Dynamic Dropdown Manager -->\n\n';
+            
+            dropdowns.forEach(dd => {
+                const labelSlug = dd.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                html += `<div class="form-group">\n`;
+                html += `  <label for="${labelSlug}">${escapeHtml(dd.name)}</label>\n`;
+                html += `  <select id="${labelSlug}" name="${labelSlug}">\n`;
+                html += `    <option value="" disabled selected>Select...</option>\n`;
+                dd.options.forEach(opt => {
+                    html += `    <option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>\n`;
+                });
+                html += `  </select>\n`;
+                html += `</div>\n\n`;
+            });
+
+            exportCodeEl.innerText = html;
+            toggleModal('exportModal', true);
+        }
+
+        function toggleModal(modalId, show) {
+            const el = document.getElementById(modalId);
+            if (show) el.classList.add('active');
+            else el.classList.remove('active');
+        }
+
+        function closeModal(e) {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.classList.remove('active');
+            }
+        }
+
+        function copyCode() {
+            const text = exportCodeEl.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Code copied to clipboard!', 'success');
+            });
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function showToast(message, type = 'neutral') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            // Set border color based on type
+            let color = 'var(--primary)';
+            if(type === 'error') color = 'var(--danger)';
+            if(type === 'success') color = 'var(--success)';
+            toast.style.borderLeftColor = color;
+
+            // Icon based on type
+            let icon = '';
+            if(type === 'success') icon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>`;
+            else if(type === 'error') icon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+            else icon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            
+            toastContainer.appendChild(toast);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease-out forwards';
+                toast.addEventListener('animationend', () => {
+                    toast.remove();
+                });
+            }, 3000);
+        }
+
+    </script>
+</body>
+</html>
